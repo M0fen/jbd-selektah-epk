@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #F5D061;
+  --color-gold-dim: #D4AF37;
+  --color-silver: #E5E5E5;
+  --color-silver-dim: #A0A0A0;
+  --color-black: #050505;
+  --color-black-pure: #000000;
+
+  --font-display: var(--font-unbounded);
+  --font-body: var(--font-space-grotesk);
+}
+
+/* Custom Utilities */
+@utility text-balance {
+  text-wrap: balance;
+}
+
+/* Custom Animations */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@utility animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+@keyframes shine {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@utility animate-shine {
+  animation: shine 4s ease-in-out infinite;
+}
+
+/* Base Reset */
+body {
+  background-color: var(--color-black);
+  color: var(--color-silver);
+  font-family: var(--font-body);
+}
+
+/* Typography Defaults */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+}
