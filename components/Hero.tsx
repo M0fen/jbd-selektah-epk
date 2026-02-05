@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function Hero() {
     return (
-        <section className="h-screen w-full flex flex-col justify-center items-center text-center relative z-10 px-6">
+        <section id="inicio" className="h-screen w-full flex flex-col justify-center items-center text-center relative z-10 px-6">
             {/* Main Title - Massive, Gold, Unbounded 900 */}
             <motion.h1
                 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-gold tracking-tighter uppercase leading-none drop-shadow-2xl cursor-default relative z-10 max-w-[95%] mx-auto"

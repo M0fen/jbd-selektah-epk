@@ -37,19 +37,6 @@ export default function RootLayout({
       <body
         className={`${unbounded.variable} ${spaceGrotesk.variable} ${syne.variable} antialiased bg-black text-silver selection:bg-gold selection:text-black overflow-x-hidden`}
       >
-        {/* Fixed Global Logo - Top Right */}
-        <div className="fixed top-6 right-6 z-50 pointer-events-none">
-          <div className="relative w-16 md:w-20 h-16 md:h-20">
-            <Image
-              src="/logo.png"
-              alt="JBD Selektah"
-              fill
-              className="object-contain opacity-60 mix-blend-lighten"
-              quality={90}
-            />
-          </div>
-        </div>
-
         {children}
       </body>
     </html>

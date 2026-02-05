@@ -4,7 +4,7 @@ import { Mail, MessageCircle, Instagram, Video } from "lucide-react";
 
 export default function ConnectSection() {
     return (
-        <section className="relative z-10 py-20 md:py-32 px-6 bg-transparent">
+        <section id="booking" className="relative z-10 py-20 md:py-32 px-6 bg-transparent">
             <div className="max-w-5xl mx-auto">
                 {/* Glass Box Container */}
                 <div className="border border-[#C5A059]/30 bg-gradient-to-b from-[#1a1405] to-[#080500] shadow-[inset_0_0_50px_rgba(0,0,0,0.6)] backdrop-blur-lg rounded-3xl p-8 md:p-12 lg:p-16 text-center">
@@ -14,7 +14,7 @@ export default function ConnectSection() {
                             SINTONIZA
                         </h2>
                         <p className="text-gold text-xs sm:text-sm md:text-base uppercase tracking-widest font-bold">
-                            LA FRECUENCIA
+                            BOOKING & MANAGEMENT
                         </p>
                     </div>
 
@@ -22,7 +22,11 @@ export default function ConnectSection() {
                     <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 mb-12 md:mb-16">
                         <SocialOrb
                             href="https://www.tiktok.com/@jbdselektah"
-                            icon={<Video className="w-5 h-5 sm:w-6 sm:h-6" />}
+                            icon={
+                                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+                                </svg>
+                            }
                             label="TikTok"
                         />
                         <SocialOrb
@@ -103,7 +107,7 @@ function ActionButton({
     children: React.ReactNode;
 }) {
     const goldStyles = "border-[#C5A059]/60 text-white hover:text-[#C5A059] hover:border-[#C5A059] hover:shadow-[0_0_40px_rgba(197,160,89,0.3)]";
-    const greenStyles = "border-green-500/60 text-white hover:text-green-400 hover:border-green-400 hover:shadow-[0_0_40px_rgba(34,197,94,0.3)]";
+    const greenStyles = "border-[#C5A059]/60 text-[#C5A059] hover:text-green-500 hover:border-green-500 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)]";
 
     return (
         <a

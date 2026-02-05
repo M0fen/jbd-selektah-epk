@@ -46,10 +46,11 @@ const slides = [
 export default function BioCarousel() {
     const [index, setIndex] = useState(0);
     const [direction, setDirection] = useState(0);
-    const [isHovered, setIsHovered] = useState(false);
+    const [showAltImage, setShowAltImage] = useState(false);
 
     const paginate = (newDirection: number) => {
         setDirection(newDirection);
+        setShowAltImage(false); // Reset to main image when changing slides
         setIndex((prev) => {
             let next = prev + newDirection;
             if (next < 0) next = slides.length - 1;
@@ -58,10 +59,17 @@ export default function BioCarousel() {
         });
     };
 
+    // Tap-to-Toggle Handler - CRITICAL FIX
+    const handleImageToggle = (e: React.MouseEvent) => {
+        e.stopPropagation(); // CRITICAL: Prevents carousel navigation
+        e.preventDefault();  // Safety check
+        setShowAltImage(!showAltImage); // Toggles boolean state A <-> B
+    };
+
     const currentSlide = slides[index];
 
     return (
-        <section className="min-h-screen w-full flex items-center justify-center bg-transparent backdrop-blur-sm relative z-20 px-6 py-12 md:py-0">
+        <section id="bio" className="min-h-screen w-full flex items-center justify-center bg-transparent backdrop-blur-sm relative z-20 px-6 py-12 md:py-0">
             <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8">
                 {/* Vertical "CAPISCI" Text - Left Side */}
                 <h3
@@ -85,11 +93,10 @@ export default function BioCarousel() {
                     {/* Bottom-Right Corner Accent */}
                     <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b-2 border-r-2 border-[#C5A059]"></div>
 
-                    {/* Left: Image Side */}
+                    {/* Left: Image Side - TAP TO TOGGLE */}
                     <div
-                        className="relative h-[50vh] md:h-[600px] w-full overflow-hidden border-b md:border-b-0 md:border-r border-gold/20"
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
+                        className="relative h-[50vh] md:h-[600px] w-full overflow-hidden border-b md:border-b-0 md:border-r border-gold/20 cursor-pointer"
+                        onClick={handleImageToggle}
                     >
                         <AnimatePresence initial={false} custom={direction}>
                             <motion.div
@@ -102,12 +109,8 @@ export default function BioCarousel() {
                                 className="absolute inset-0"
                             >
                                 <div className="relative w-full h-full">
-                                    {/* Default Image */}
-                                    <motion.div
-                                        className="absolute inset-0"
-                                        animate={{ opacity: isHovered ? 0 : 1 }}
-                                        transition={{ duration: 0.4, ease: "easeInOut" }}
-                                    >
+                                    {/* Main Image (Cara A) */}
+                                    <div className={`absolute inset-0 transition-opacity duration-500 ${showAltImage ? 'opacity-0' : 'opacity-100'}`}>
                                         <Image
                                             src={currentSlide.defaultImage}
                                             alt={currentSlide.title}
@@ -117,14 +120,10 @@ export default function BioCarousel() {
                                             sizes="(max-width: 768px) 100vw, 50vw"
                                             priority={index === 0}
                                         />
-                                    </motion.div>
+                                    </div>
 
-                                    {/* Hover Image */}
-                                    <motion.div
-                                        className="absolute inset-0"
-                                        animate={{ opacity: isHovered ? 1 : 0 }}
-                                        transition={{ duration: 0.4, ease: "easeInOut" }}
-                                    >
+                                    {/* Alternate Image (Cara B) */}
+                                    <div className={`absolute inset-0 transition-opacity duration-500 ${showAltImage ? 'opacity-100' : 'opacity-0'}`}>
                                         <Image
                                             src={currentSlide.hoverImage}
                                             alt={`${currentSlide.title} - Alternate`}
@@ -133,7 +132,7 @@ export default function BioCarousel() {
                                             quality={95}
                                             sizes="(max-width: 768px) 100vw, 50vw"
                                         />
-                                    </motion.div>
+                                    </div>
 
                                     {/* Overlay gradient */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />

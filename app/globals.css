@@ -46,7 +46,36 @@
   animation: shine 4s ease-in-out infinite;
 }
 
+@keyframes vinyl-glitch {
+
+  0%,
+  94%,
+  100% {
+    transform: translateX(0) skewX(0);
+  }
+
+  95% {
+    transform: translateX(-2px) skewX(-1deg);
+  }
+
+  96% {
+    transform: translateX(2px) skewX(1deg);
+  }
+
+  97% {
+    transform: translateX(-1px) skewX(0);
+  }
+}
+
+@utility animate-vinyl-glitch {
+  animation: vinyl-glitch 8s ease-in-out infinite;
+}
+
 /* Base Reset */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--color-black);
   color: var(--color-silver);

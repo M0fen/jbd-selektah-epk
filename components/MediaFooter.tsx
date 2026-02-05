@@ -8,7 +8,7 @@ export default function MediaFooter() {
     ];
 
     return (
-        <footer className="relative z-10 bg-transparent pt-24 pb-12 px-6 border-t border-gold/10">
+        <footer id="producciones" className="relative z-10 bg-transparent pt-24 pb-12 px-6 border-t border-gold/10">
             <div className="max-w-7xl mx-auto text-center">
                 {/* Media Section */}
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#C5A059] via-white to-[#C5A059] bg-[length:200%_auto] animate-shine mb-12 md:mb-16 uppercase tracking-tight">
