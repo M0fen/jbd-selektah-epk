@@ -57,7 +57,7 @@ export default function ConnectSection() {
                     {/* Business Action Buttons - Pill-shaped */}
                     <div className="flex flex-col md:flex-row justify-center items-stretch md:items-center gap-4 max-w-2xl mx-auto">
                         <ActionButton
-                            href="mailto:booking@jbdselektah.com"
+                            href="mailto:jviera137@gmail.com"
                             variant="gold"
                             icon={<Mail className="w-4 h-4 sm:w-5 sm:h-5" />}
                         >
