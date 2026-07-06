@@ -7,8 +7,10 @@ import Image from "next/image";
 
 const navLinks = [
     { href: "#inicio", label: "Inicio" },
-    { href: "#bio", label: "¿Quién es JBD?" },
-    { href: "#producciones", label: "Mis Producciones" },
+    { href: "#bio", label: "Bio" },
+    { href: "#multimedia", label: "Producciones" },
+    { href: "#shows", label: "Shows" },
+    { href: "#merch", label: "Tienda" },
     { href: "#booking", label: "Booking" },
 ];
 

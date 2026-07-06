@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MessageCircle, Instagram, Video } from "lucide-react";
+import { Mail, MessageCircle, Instagram } from "lucide-react";
 
 export default function ConnectSection() {
     return (
@@ -64,7 +64,7 @@ export default function ConnectSection() {
                             CONTÁCTAME POR EMAIL
                         </ActionButton>
                         <ActionButton
-                            href="https://wa.me/573239829864"
+                            href="https://wa.me/573239829864?text=Hola%20JBD%2C%20quiero%20cotizar%20una%20fecha%20%2Fbooking"
                             variant="green"
                             icon={<MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />}
                         >

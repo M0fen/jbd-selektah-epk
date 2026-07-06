@@ -1,0 +1,12 @@
+Deja caer aquí los archivos reales del Press Kit. Los botones de la sección
+PressKit ya apuntan a estos nombres exactos:
+
+  press-kit-jbd-selektah.pdf        → Press Kit (bio, logos, contacto)
+  fotos-alta-jbd-selektah.zip       → Fotos en alta para prensa
+  rider-tecnico-jbd-selektah.pdf    → Rider técnico de tarima
+
+Mantén los nombres tal cual (o actualiza las rutas en components/PressKit.tsx).
+Hasta que los subas, esos enlaces darán 404.
+
+Los logos de prensa (opcional) van en /public/press/logos/*.svg y se referencian
+desde data/press.ts en el campo `logo`.

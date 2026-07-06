@@ -71,6 +71,99 @@
   animation: vinyl-glitch 8s ease-in-out infinite;
 }
 
+/* Metallic shine title — shared across sections */
+@keyframes metallicShine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.metallic-title {
+  background: linear-gradient(-45deg, #C5A059 20%, #fff 40%, #C5A059 60%, #fff 80%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: metallicShine 4s linear infinite;
+}
+
+/* Reduced Motion — kill infinite/looping motion, keep the page usable and sober.
+   Framer Motion (JS-driven) is gated separately via useReducedMotion in components. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  .animate-spin-slow,
+  .animate-shine,
+  .animate-vinyl-glitch,
+  .metallic-title,
+  .fx-grain {
+    animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Global film-grain + scanlines overlay (glitch language, whole page) */
+.fx-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+}
+
+.fx-scanlines {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.035) 0px,
+    rgba(255, 255, 255, 0.035) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+}
+
+.fx-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  animation: grain-shift 0.5s steps(3) infinite;
+}
+
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  33% { transform: translate(-3%, 2%); }
+  66% { transform: translate(2%, -3%); }
+  100% { transform: translate(0, 0); }
+}
+
 /* Base Reset */
 html {
   scroll-behavior: smooth;

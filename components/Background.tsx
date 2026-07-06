@@ -1,14 +1,17 @@
 "use client";
 
 import { useRef, useMemo, useState, useEffect } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Float } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Environment, Float, Lightformer } from "@react-three/drei";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
+import { useReducedMotion } from "framer-motion";
 import * as THREE from "three";
-import { clsx } from "clsx";
+import { audioReactive } from "@/lib/audio";
 
 /**
- * Individual Geometric Element
- * Rotates and scales up when mouse is near.
+ * Individual geometric element.
+ * Idles with a slow spin, swells when the pointer passes near it, and pulses with
+ * the beat (scale from bass, emissive glow from treble) when audio is active.
  */
 function GeometricElement({
     position,
@@ -23,51 +26,44 @@ function GeometricElement({
 }) {
     const meshRef = useRef<THREE.Mesh>(null);
 
-    // Random rotation speed
-    const rotationSpeed = useMemo(() => {
-        return [
-            (Math.random() - 0.5) * 0.02,
-            (Math.random() - 0.5) * 0.02,
-            (Math.random() - 0.5) * 0.02,
-        ];
-    }, []);
+    // Random, stable rotation speed per element (computed once, off the render path).
+    const [rotationSpeed] = useState(() => [
+        (Math.random() - 0.5) * 0.02,
+        (Math.random() - 0.5) * 0.02,
+        (Math.random() - 0.5) * 0.02,
+    ]);
+
+    // Reusable vectors — allocated once, mutated every frame to avoid GC churn.
+    const worldPos = useMemo(() => new THREE.Vector3(), []);
+    const scaleTarget = useMemo(() => new THREE.Vector3(), []);
 
     useFrame((state) => {
-        if (!meshRef.current) return;
+        const mesh = meshRef.current;
+        if (!mesh) return;
 
-        // Base rotation
-        meshRef.current.rotation.x += rotationSpeed[0];
-        meshRef.current.rotation.y += rotationSpeed[1];
-        meshRef.current.rotation.z += rotationSpeed[2];
+        // Base rotation (+ mid-band nudge on the beat).
+        mesh.rotation.x += rotationSpeed[0];
+        mesh.rotation.y += rotationSpeed[1];
+        mesh.rotation.z += rotationSpeed[2] + audioReactive.mid * 0.08;
 
-        // Mouse Interaction (Magnetic Oscillation)
-        // Convert world position to screen space to check mouse proximity?
-        // Or check in 3D space if we have a raycaster?
-        // Easier: Use state.pointer (normalized -1 to 1) and project mesh position?
-        // Actually, simple vector distance in 3D if we unproject mouse?
-        // Let's use simple distance from camera ray?
+        // Project the mesh into normalized device coords to measure pointer proximity.
+        mesh.getWorldPosition(worldPos);
+        worldPos.project(state.camera);
 
-        // Simplest approach: Use the pointer vector and check distance to object's screen position?
-        // But object is in 3D.
-        // Let's just use the `useFrame` state.pointer which is [-1, 1].
-        // We need object position in NDC.
-
-        const vec = new THREE.Vector3();
-        meshRef.current.getWorldPosition(vec);
-        vec.project(state.camera); // vec is now in NDC [-1, 1]
-
-        const dx = state.pointer.x - vec.x;
-        const dy = state.pointer.y - vec.y;
+        const dx = state.pointer.x - worldPos.x;
+        const dy = state.pointer.y - worldPos.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        // If close (e.g. < 0.3 NDC units), scale up and oscillate faster
-        if (dist < 0.4) {
-            const scaleTarget = initialScale * 1.5;
-            meshRef.current.scale.lerp(new THREE.Vector3(scaleTarget, scaleTarget, scaleTarget), 0.1);
-            meshRef.current.rotation.x += 0.05; // Spin faster
-        } else {
-            meshRef.current.scale.lerp(new THREE.Vector3(initialScale, initialScale, initialScale), 0.1);
-        }
+        // Scale = base × pointer swell × beat pulse.
+        const hoverBoost = dist < 0.4 ? 1.5 : 1;
+        const pulse = 1 + audioReactive.bass * 0.6;
+        const s = initialScale * hoverBoost * pulse;
+        mesh.scale.lerp(scaleTarget.set(s, s, s), 0.12);
+        if (dist < 0.4) mesh.rotation.x += 0.05;
+
+        // Emissive glow tracks the treble — this is what Bloom picks up on the beat.
+        const mat = mesh.material as THREE.MeshStandardMaterial;
+        mat.emissiveIntensity = audioReactive.treble * 1.6;
     });
 
     return (
@@ -76,9 +72,12 @@ function GeometricElement({
                 <tetrahedronGeometry args={[1, 0]} />
                 <meshStandardMaterial
                     color={color}
+                    emissive={color}
+                    emissiveIntensity={0}
                     wireframe={wireframe}
                     metalness={1}
                     roughness={0.2}
+                    envMapIntensity={0.6}
                     transparent
                     opacity={0.2}
                 />
@@ -87,31 +86,34 @@ function GeometricElement({
     );
 }
 
-// Fix Float syntax: <Float speed={2} ...>
-// But wait, the component is defined below.
+/** Advances the audio analysis once per frame (reads, never re-renders React). */
+function AudioDriver() {
+    useFrame(() => audioReactive.update());
+    return null;
+}
 
-function GeometricField() {
-    const count = 100; // Increased density
-    const range = 25;
+const FIELD_RANGE = 25;
+const FIELD_POOL_SIZE = 100;
 
-    const elements = useMemo(() => {
-        return new Array(count).fill(0).map((_, i) => ({
+function GeometricField({ count }: { count: number }) {
+    // Stable pool generated once, off the render path; `count` just controls how
+    // many of them we render (dense on desktop, light on mobile).
+    const [pool] = useState(() =>
+        new Array(FIELD_POOL_SIZE).fill(0).map(() => ({
             position: [
-                (Math.random() - 0.5) * range * 1.5, // Wider spread
-                (Math.random() - 0.5) * range,
-                (Math.random() - 0.5) * 15 - 5, // Behind text mostly, but some front?
-                // Z range: -10 to 0? Camera is at 0,0,5 usually.
-                // Let's put them -15 to 2.
+                (Math.random() - 0.5) * FIELD_RANGE * 1.5,
+                (Math.random() - 0.5) * FIELD_RANGE,
+                (Math.random() - 0.5) * 15 - 5,
             ] as [number, number, number],
-            color: Math.random() > 0.5 ? "#F5D061" : "#C0C0C0", // Gold or Silver
-            wireframe: true, // Force wireframe for "finer" look? Or mixed. Let's keep mixed but mostly wireframe.
-            scale: 0.3 + Math.random() * 0.2, // Smaller scale
-        }));
-    }, []);
+            color: Math.random() > 0.5 ? "#F5D061" : "#C0C0C0", // Gold or silver
+            wireframe: true,
+            scale: 0.3 + Math.random() * 0.2,
+        }))
+    );
 
     return (
         <group>
-            {elements.map((el, i) => (
+            {pool.slice(0, count).map((el, i) => (
                 <GeometricElement
                     key={i}
                     position={el.position}
@@ -124,15 +126,33 @@ function GeometricField() {
     );
 }
 
+/**
+ * Responsive tuning: dense field + post-processing on desktop; lighter field and
+ * no post on mobile to protect frame rate on 4G Colombian phones.
+ */
+function useResponsive() {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const mq = window.matchMedia("(max-width: 768px)");
+        const update = () => setIsMobile(mq.matches);
+        update();
+        mq.addEventListener("change", update);
+        return () => mq.removeEventListener("change", update);
+    }, []);
+
+    return { count: isMobile ? 35 : 100, isMobile };
+}
+
 export default function Background() {
     const [opacity, setOpacity] = useState(1);
+    const { count, isMobile } = useResponsive();
+    const reduceMotion = useReducedMotion();
+    const enablePost = !isMobile && !reduceMotion;
 
     useEffect(() => {
         const handleScroll = () => {
-            const scrollY = window.scrollY;
-            // Fade out after 100vh? Or gradual?
-            // "Opacity starts at 1.0 (Hero) and fades to 0.6 (lower sections)" - More visible triangles
-            const newOpacity = Math.max(0.6, 1 - scrollY / 800);
+            const newOpacity = Math.max(0.6, 1 - window.scrollY / 800);
             setOpacity(newOpacity);
         };
 
@@ -141,36 +161,41 @@ export default function Background() {
     }, []);
 
     return (
+        // pointer-events-none lets clicks/selection pass through to the UI above;
+        // R3F still tracks the pointer via eventSource={document.body}.
         <div
-            className="fixed inset-0 -z-10 pointer-events-none" // pointer-events-none allows text selection, but blocks mouse interaction for R3F?
-            // Wait, if pointer-events-none, R3F won't get mouse events?
-            // We want R3F to receive mouse events but NOT block clicks on UI.
-            // Canvas should have pointer-events-none? No, then it tracks?
-            // R3F tracks mouse via window listener usually? Or canvas listener?
-            // Usually R3F adds listeners to the canvas.
-            // If canvas has pointer-events-none, it won't receive events?
-            // Actually `eventSource={window}` allows R3F to track events even if canvas is ignored?
-            // But we need to click links on top.
-            // So `z-10` is behind. `pointer-events-none` on container implies clicks go through.
-            // R3F `pointer-events-none` might disable hover?
-            // Solution: `eventSource={document.body}` or similar.
+            className="fixed inset-0 -z-10 pointer-events-none"
             style={{ opacity, transition: "opacity 0.5s ease-out" }}
         >
             <Canvas
                 camera={{ position: [0, 0, 10], fov: 45 }}
                 gl={{ alpha: true, antialias: true }}
-                dpr={[1, 2]} // Performance optimization
-                eventSource={typeof window !== 'undefined' ? document.body : undefined}
+                dpr={[1, 2]}
+                eventSource={typeof window !== "undefined" ? document.body : undefined}
                 eventPrefix="client"
             >
+                <AudioDriver />
+
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[10, 10, 5]} intensity={1} color="#F5D061" />
                 <pointLight position={[-10, -10, -5]} intensity={0.5} color="#C0C0C0" />
 
-                <GeometricField />
+                <GeometricField count={count} />
 
-                {/* Environment for reflections on metallic objects */}
-                <Environment preset="city" />
+                {/* Local, baked reflections — no remote HDR fetch. */}
+                <Environment resolution={256} frames={1}>
+                    <Lightformer intensity={2} color="#F5D061" position={[0, 5, -5]} scale={[10, 10, 1]} />
+                    <Lightformer intensity={1} color="#C0C0C0" position={[-6, -2, -3]} scale={[8, 8, 1]} />
+                    <Lightformer form="ring" intensity={1.5} color="#ffffff" position={[6, 3, 2]} scale={[5, 5, 1]} />
+                </Environment>
+
+                {/* Desktop-only bloom so the gold glows on the beat. Off on mobile / reduced-motion. */}
+                {enablePost && (
+                    <EffectComposer>
+                        <Bloom mipmapBlur intensity={1.1} luminanceThreshold={0.15} luminanceSmoothing={0.9} />
+                        <Vignette offset={0.25} darkness={0.7} />
+                    </EffectComposer>
+                )}
             </Canvas>
         </div>
     );
