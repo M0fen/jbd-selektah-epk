@@ -1,0 +1,10 @@
+Deja aquí un clip corto de un track de JBD para el fondo audio-reactivo:
+
+  preview.mp3   → ~15-30s, el fondo geométrico late con el beat
+
+El botón de audio (esquina inferior izquierda) arranca en MUTE por la política de
+autoplay del navegador; el visitante lo activa con un toque. Si no hay archivo,
+el fondo simplemente idle sin reaccionar (fallback limpio, sin errores visibles).
+
+Usa un fragmento del que tengas derechos. Formato recomendado: MP3 o AAC, mono
+o estéreo, bitrate moderado (128-192kbps) para no pesar.

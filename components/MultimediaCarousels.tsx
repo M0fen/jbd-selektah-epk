@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Navigation, Autoplay } from 'swiper/modules';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
 
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
@@ -24,13 +24,7 @@ export default function MultimediaCarousels() {
   };
 
   const renderCarousel = (title: string, videoIds: string[]) => (
-    <motion.div
-      className="w-full mb-16"
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-    >
+    <Reveal className="w-full mb-16">
       <h2 className="metallic-title text-3xl sm:text-4xl md:text-5xl font-black text-center mb-8 uppercase tracking-tight">
         {title}
       </h2>
@@ -76,12 +70,16 @@ export default function MultimediaCarousels() {
                 className="relative w-full aspect-video rounded-xl overflow-hidden bg-transparent shadow-2xl transition-transform duration-300 cursor-pointer hover:scale-[1.03] z-10"
                 onClick={() => handleVideoClick(id)}
               >
+                {/* Raw <img>: YouTube thumbnails are served straight from img.youtube.com
+                    with an hq fallback — deliberately not routed through next/image. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`https://img.youtube.com/vi/${id}/maxresdefault.jpg`}
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
                   }}
                   alt={`Video thumbnail ${index + 1}`}
+                  loading="lazy"
                   className="w-full h-full object-cover bg-transparent"
                 />
               </div>
@@ -89,7 +87,7 @@ export default function MultimediaCarousels() {
           ))}
         </Swiper>
       </div>
-    </motion.div>
+    </Reveal>
   );
 
   return (
@@ -111,28 +109,6 @@ export default function MultimediaCarousels() {
           font-size: 28px;
           font-weight: 300;
         }
-        
-        /* Metallic Title Effect */
-        .metallic-title {
-          background: linear-gradient(
-            -45deg,
-            #C5A059 20%,
-            #fff 40%,
-            #C5A059 60%,
-            #fff 80%
-          );
-          background-size: 200% auto;
-          color: transparent;
-          -webkit-background-clip: text;
-          background-clip: text;
-          animation: metallicShine 4s linear infinite;
-        }
-        
-        @keyframes metallicShine {
-          to {
-            background-position: 200% center;
-          }
-        }
 
         /* 3D Focus: Dimming Inactive Slides */
         .my-swiper .swiper-slide {
@@ -152,13 +128,7 @@ export default function MultimediaCarousels() {
       {renderCarousel("LO MÁS SONADO", loMasSonado)}
 
       {/* Spotify Section */}
-      <motion.div
-        className="w-full mt-24 mb-16"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
+      <Reveal className="w-full mt-24 mb-16">
         <h2 className="metallic-title text-3xl sm:text-4xl md:text-5xl font-black text-center mb-12 uppercase tracking-tight">
           ESCUCHA EN SPOTIFY
         </h2>
@@ -176,7 +146,7 @@ export default function MultimediaCarousels() {
             className="w-full"
           ></iframe>
         </div>
-      </motion.div>
+      </Reveal>
 
       {/* Lightbox Modal */}
       {activeVideo && (
@@ -196,7 +166,7 @@ export default function MultimediaCarousels() {
             onClick={(e) => e.stopPropagation()}
           >
             <iframe
-              src={`https://www.youtube.com/embed/${activeVideo}?autoplay=1`}
+              src={`https://www.youtube-nocookie.com/embed/${activeVideo}?autoplay=1`}
               title="YouTube video player"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen

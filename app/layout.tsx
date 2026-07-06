@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Unbounded, Space_Grotesk, Syne } from "next/font/google";
-import Image from "next/image";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import SmoothScroll from "@/components/SmoothScroll";
+import Preloader from "@/components/Preloader";
+import GrainOverlay from "@/components/GrainOverlay";
+import Cursor from "@/components/Cursor";
 import "./globals.css";
 
 const unbounded = Unbounded({
@@ -12,8 +17,6 @@ const unbounded = Unbounded({
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space-grotesk",
-  // Space Grotesk is a variable font by default usually, but we can specify if needed.
-  // Default is fine.
 });
 
 const syne = Syne({
@@ -22,9 +25,68 @@ const syne = Syne({
   weight: ["800"],
 });
 
+const siteUrl = "https://jbdselektah.com";
+const siteDescription =
+  "EPK oficial de JBD Selektah — selektah/DJ de dancehall y latin dancehall desde El Limonar, Medellín. Booking, producciones, prensa y contacto directo. #NOLAPARE";
+
 export const metadata: Metadata = {
-  title: "JBD SELEKTAH | El Ritmo de la Calle",
-  description: "Official EPK of JBD Selektah",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "JBD SELEKTAH — Selektah de Dancehall | Medellín",
+    template: "%s | JBD Selektah",
+  },
+  description: siteDescription,
+  keywords: [
+    "JBD Selektah",
+    "selektah",
+    "dancehall",
+    "latin dancehall",
+    "DJ dancehall Medellín",
+    "DJ Colombia",
+    "El Limonar",
+    "booking DJ dancehall",
+    "sound system",
+    "#NOLAPARE",
+  ],
+  applicationName: "JBD Selektah EPK",
+  authors: [{ name: "JBD Selektah" }],
+  creator: "JBD Selektah",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    title: "JBD SELEKTAH — Selektah de Dancehall | Medellín",
+    description: siteDescription,
+    url: siteUrl,
+    siteName: "JBD Selektah",
+    type: "website",
+    locale: "es_CO",
+    images: [
+      {
+        url: "/og.jpg",
+        width: 1200,
+        height: 630,
+        alt: "JBD Selektah — El ritmo de la calle",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "JBD SELEKTAH — Selektah de Dancehall | Medellín",
+    description: siteDescription,
+    images: ["/og.jpg"],
+  },
 };
 
 export default function RootLayout({
@@ -33,11 +95,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body
         className={`${unbounded.variable} ${spaceGrotesk.variable} ${syne.variable} antialiased bg-black text-silver selection:bg-gold selection:text-black overflow-x-hidden`}
       >
+        <Preloader />
+        <SmoothScroll />
         {children}
+        <GrainOverlay />
+        <Cursor />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
