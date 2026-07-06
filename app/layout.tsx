@@ -25,7 +25,14 @@ const syne = Syne({
   weight: ["800"],
 });
 
-const siteUrl = "https://jbdselektah.com";
+// Base URL para OG/canonical. Usa el dominio real automáticamente:
+// - NEXT_PUBLIC_SITE_URL si conectas un dominio propio (p. ej. https://jbdselektah.com)
+// - si no, el dominio de producción de Vercel (para que el share funcione ya)
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "https://jbd-selektah-epk.vercel.app");
 const siteDescription =
   "EPK oficial de JBD Selektah — selektah/DJ de dancehall y latin dancehall desde El Limonar, Medellín. Booking, producciones, prensa y contacto directo. #NOLAPARE";
 
