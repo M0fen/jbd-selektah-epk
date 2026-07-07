@@ -11,8 +11,8 @@ export type Show = {
 };
 
 export const shows: Show[] = [
-  { fecha: "2026-07-09", ciudad: "Medellín", venue: "Lion Reggae Bar", estado: "proximo" },
-  { fecha: "2026-07-10", ciudad: "Medellín", venue: "Lion Reggae Bar", estado: "proximo" },
-  { fecha: "2026-07-11", ciudad: "Medellín", venue: "Lion Reggae Bar", estado: "proximo" },
+  { fecha: "2026-07-09", ciudad: "Pereira", venue: "Lion Reggae Bar", estado: "proximo" },
+  { fecha: "2026-07-10", ciudad: "Pereira", venue: "Lion Reggae Bar", estado: "proximo" },
+  { fecha: "2026-07-11", ciudad: "Pereira", venue: "Lion Reggae Bar", estado: "proximo" },
   { fecha: "2026-07-12", ciudad: "Medellín", venue: "La Séptima", estado: "proximo" },
 ];
