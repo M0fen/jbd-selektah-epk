@@ -1,5 +1,5 @@
 /**
- * ⚠️ PRODUCTOS DE EJEMPLO — REEMPLAZAR CON EL DROP REAL (línea Eme / PuntoNeutro).
+ * ⚠️ PRODUCTOS DE EJEMPLO — REEMPLAZAR CON EL DROP REAL.
  * Imágenes en /public/merch/*.webp (misma regla: optimizadas, < 400KB).
  * Las imágenes actuales son placeholders de marca: cámbialas por foto de producto.
  */

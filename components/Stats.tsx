@@ -2,40 +2,36 @@
 
 import { useEffect, useRef, useState } from "react";
 import { animate, useInView, useReducedMotion } from "framer-motion";
-import Reveal from "./Reveal";
 import { stats, type Stat } from "@/data/stats";
 
 const nf = new Intl.NumberFormat("es-CO");
 
-function StatTile({ stat }: { stat: Stat }) {
+function StatItem({ stat }: { stat: Stat }) {
     const ref = useRef<HTMLDivElement>(null);
     const inView = useInView(ref, { once: true, margin: "-80px" });
     const reduceMotion = useReducedMotion();
     const [animated, setAnimated] = useState(0);
 
-    // Reduced motion: show the real figure immediately, no count-up.
+    // Reduced motion: mostrar la cifra real de inmediato, sin count-up.
     const value = reduceMotion ? stat.value : animated;
 
     useEffect(() => {
         if (reduceMotion || !inView) return;
         const controls = animate(0, stat.value, {
-            duration: 1.6,
-            ease: "easeOut",
+            duration: 1.8,
+            ease: [0.16, 1, 0.3, 1],
             onUpdate: (v) => setAnimated(v),
         });
         return () => controls.stop();
     }, [inView, reduceMotion, stat.value]);
 
     return (
-        <div
-            ref={ref}
-            className="relative flex flex-col items-center justify-center px-4 py-8 sm:py-10"
-        >
-            <span className="font-display font-black tabular-nums leading-none text-4xl sm:text-5xl lg:text-6xl text-transparent bg-clip-text bg-gradient-to-b from-white via-[#F5D061] to-[#C5A059]">
+        <div ref={ref} className="flex flex-col items-center text-center">
+            <span className="font-display font-black tabular-nums leading-[0.95] text-5xl sm:text-6xl lg:text-7xl text-transparent bg-clip-text bg-gradient-to-b from-[#F5D061] to-[#C5A059] drop-shadow-[0_2px_20px_rgba(245,208,97,0.15)]">
                 {nf.format(Math.round(value))}
                 {stat.suffix}
             </span>
-            <span className="mt-3 text-[0.7rem] sm:text-xs uppercase tracking-[0.2em] text-silver/70 text-center">
+            <span className="mt-3 text-[0.7rem] sm:text-xs uppercase tracking-[0.28em] text-silver/55">
                 {stat.label}
             </span>
         </div>
@@ -44,23 +40,12 @@ function StatTile({ stat }: { stat: Stat }) {
 
 export default function Stats() {
     return (
-        <section
-            id="stats"
-            className="relative z-10 w-full px-6 py-20 md:py-28 border-t border-gold/10"
-        >
-            <Reveal className="relative max-w-6xl mx-auto border border-gold/15 bg-black/30 backdrop-blur-sm px-4 sm:px-8 py-6">
-                {/* Corner accents — brand system */}
-                <span className="absolute -top-2 -left-2 w-6 h-6 border-t-2 border-l-2 border-[#C5A059]" />
-                <span className="absolute -top-2 -right-2 w-6 h-6 border-t-2 border-r-2 border-[#C5A059]" />
-                <span className="absolute -bottom-2 -left-2 w-6 h-6 border-b-2 border-l-2 border-[#C5A059]" />
-                <span className="absolute -bottom-2 -right-2 w-6 h-6 border-b-2 border-r-2 border-[#C5A059]" />
-
-                <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-gold/10">
-                    {stats.map((stat) => (
-                        <StatTile key={stat.label} stat={stat} />
-                    ))}
-                </div>
-            </Reveal>
+        <section id="stats" className="relative z-10 w-full px-6 py-16 md:py-24">
+            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-y-12 sm:grid-cols-3 sm:gap-y-0 sm:gap-x-8">
+                {stats.map((stat) => (
+                    <StatItem key={stat.label} stat={stat} />
+                ))}
+            </div>
         </section>
     );
 }

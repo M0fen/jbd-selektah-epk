@@ -5,7 +5,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import SmoothScroll from "@/components/SmoothScroll";
 import Preloader from "@/components/Preloader";
 import GrainOverlay from "@/components/GrainOverlay";
-import Cursor from "@/components/Cursor";
 import "./globals.css";
 
 const unbounded = Unbounded({
@@ -110,7 +109,6 @@ export default function RootLayout({
         <SmoothScroll />
         {children}
         <GrainOverlay />
-        <Cursor />
         <Analytics />
         <SpeedInsights />
       </body>

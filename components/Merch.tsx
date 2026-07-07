@@ -193,7 +193,7 @@ export default function Merch() {
                         La Tienda
                     </h2>
                     <p className="text-gold text-xs sm:text-sm uppercase tracking-widest font-bold mt-3">
-                        Línea Eme · Drop oficial
+                        Drop oficial
                     </p>
                 </Reveal>
 
