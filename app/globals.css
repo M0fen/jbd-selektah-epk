@@ -87,6 +87,48 @@
   animation: metallicShine 4s linear infinite;
 }
 
+/* Glitch persistente del Hero — aberración cromática en ráfagas breves (acento, no ruido).
+   .hero-glitch = intensidad completa (título, con micro-jitter);
+   .hero-glitch-soft = ~35%, solo color (para el tagline con parallax, sin transform). */
+@keyframes hero-glitch {
+  0%, 46%, 50%, 89%, 95%, 100% {
+    text-shadow: none;
+    transform: translate3d(0, 0, 0) skewX(0deg);
+  }
+  47% {
+    text-shadow: -2px 0 #ff2b4e, 2px 0 #17e9ff;
+    transform: translate3d(1px, 0, 0) skewX(-0.6deg);
+  }
+  48.5% {
+    text-shadow: 1.5px 0 #ff2b4e, -1.5px 0 #17e9ff;
+    transform: translate3d(-1px, 0, 0) skewX(0.6deg);
+  }
+  90% {
+    text-shadow: -2.5px 0 #ff2b4e, 2.5px 0 #17e9ff;
+    transform: translate3d(1px, 0, 0) skewX(0deg);
+  }
+  92% {
+    text-shadow: 2px 0 #ff2b4e, -2px 0 #17e9ff;
+    transform: translate3d(-1px, 0, 0) skewX(-0.5deg);
+  }
+}
+
+@keyframes hero-glitch-soft {
+  0%, 46%, 50%, 89%, 95%, 100% { text-shadow: none; }
+  47% { text-shadow: -0.7px 0 #ff2b4e, 0.7px 0 #17e9ff; }
+  48.5% { text-shadow: 0.5px 0 #ff2b4e, -0.5px 0 #17e9ff; }
+  90% { text-shadow: -0.9px 0 #ff2b4e, 0.9px 0 #17e9ff; }
+  92% { text-shadow: 0.7px 0 #ff2b4e, -0.7px 0 #17e9ff; }
+}
+
+.hero-glitch {
+  animation: hero-glitch 6s linear infinite;
+}
+
+.hero-glitch-soft {
+  animation: hero-glitch-soft 6s linear infinite;
+}
+
 /* Reduced Motion — kill infinite/looping motion, keep the page usable and sober.
    Framer Motion (JS-driven) is gated separately via useReducedMotion in components. */
 @media (prefers-reduced-motion: reduce) {
@@ -98,7 +140,9 @@
   .animate-shine,
   .animate-vinyl-glitch,
   .metallic-title,
-  .fx-grain {
+  .fx-grain,
+  .hero-glitch,
+  .hero-glitch-soft {
     animation: none !important;
   }
 

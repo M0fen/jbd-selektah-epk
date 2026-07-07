@@ -182,7 +182,7 @@ export default function Hero() {
                     ) : activeMode === "glitch" ? (
                         <span ref={glitchRef} aria-hidden className={nameBox} />
                     ) : (
-                        <span aria-hidden className={nameBox}>
+                        <span aria-hidden className={`${nameBox} hero-glitch`}>
                             {NAME}
                         </span>
                     )}
@@ -195,7 +195,7 @@ export default function Hero() {
                 initial={false}
                 animate={showFinal ? { opacity: 0.9 } : { opacity: 0 }}
                 transition={{ duration: 0.6, delay: reduced ? 0 : 0.05, ease: "easeOut" }}
-                className="mt-6 md:mt-8 text-sm sm:text-base md:text-xl lg:text-2xl font-extrabold text-white tracking-[0.2em] sm:tracking-[0.3em] md:tracking-[0.5em] lg:tracking-[0.8em] uppercase relative z-10 max-w-[90%] mx-auto select-none"
+                className="hero-glitch-soft mt-6 md:mt-8 text-sm sm:text-base md:text-xl lg:text-2xl font-extrabold text-white tracking-[0.2em] sm:tracking-[0.3em] md:tracking-[0.5em] lg:tracking-[0.8em] uppercase relative z-10 max-w-[90%] mx-auto select-none"
             >
                 {TAG}
             </motion.p>
